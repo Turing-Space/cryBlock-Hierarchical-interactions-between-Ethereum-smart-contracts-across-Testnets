@@ -73,8 +73,9 @@ contract Custodian {
         seed = new_seed;
 
         // update seed for all client contracts
+        bytes4 hashOfFunct = bytes4(keccak256("changeSeed(uint256 new_seed)"));
         for(var i=1;i<=volume;i++) {
-            getClientAddrByID(i).delegatecall(bytes4(keccak256("changeSeed(uint256 new_seed)")), new_seed);
+            getClientAddrByID(i).delegatecall(hashOfFunct, new_seed);
         }
         
     }
