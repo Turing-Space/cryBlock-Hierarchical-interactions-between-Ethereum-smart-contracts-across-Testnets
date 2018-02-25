@@ -71,7 +71,12 @@ contract Custodian {
 
     function setSeed(uint256 new_seed) onlyOwner(msg.sender) {
         seed = new_seed;
-        msg.sender.delegatecall(bytes4(keccak256("changeSeed(uint256 new_seed)")), new_seed);
+
+        // update seed for all client contracts
+        for(var i=1;i<=volume;i++) {
+            getClientAddrByID(i).delegatecall(bytes4(keccak256("changeSeed(uint256 new_seed)")), new_seed);
+        }
+        
     }
 
     function changeOwner(address new_owner) onlyOwner(msg.sender) {
