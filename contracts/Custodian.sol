@@ -17,12 +17,16 @@ contract Client {
     creator = _creator;
   }
 
-  function getRamdomNumber(uint256 seed) returns (uint256) {
+  function getRamdomNumber() returns (uint256) {
         return uint256(keccak256(seed));
     }
 
-  function changeSeed(uint256 new_seed) onlyCreater(msg.sender) {
+  function changeSeed(uint256 new_seed) public{
       seed = new_seed;
+  }
+  
+  function getSeed() view onlyCreater(msg.sender) returns (uint256){
+      return seed;
   }
   
 }
@@ -65,19 +69,24 @@ contract Custodian {
     }
 
     // Return Client address
-    function getClientAddrByID(uint256 clientID) public returns (address) {
+    function getClientAddrByID(uint256 clientID) public view returns (address) {
         return clients[clientID];
     }
 
     function setSeed(uint256 new_seed) onlyOwner(msg.sender) {
         seed = new_seed;
-
-        // update seed for all client contracts
-        bytes4 hashOfFunct = bytes4(keccak256("changeSeed(uint256 new_seed)"));
-        for(var i=1;i<=volume;i++) {
-            getClientAddrByID(i).delegatecall(hashOfFunct, new_seed);
+        if (volume >= 1) {
+            for (var i = 1; i <= volume; i++) {
+                setSeedByAddress(getClientAddrByID(i), new_seed);
+            }
         }
+    }
+    
+    function setSeedByAddress(address clientAddress, uint256 new_seed) internal onlyOwner(msg.sender) returns (bool success) {
+        Client client = Client(clientAddress);
+        client.changeSeed(new_seed);
         
+        return true;
     }
 
     function changeOwner(address new_owner) onlyOwner(msg.sender) {
