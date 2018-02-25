@@ -1,5 +1,3 @@
-pragma solidity ^0.4.13;
-
 contract Client {
 
     address owner;
@@ -17,12 +15,16 @@ contract Client {
     creator = _creator;
   }
 
-  function getRamdomNumber(uint256 seed) returns (uint256) {
+  function getRamdomNumber() returns (uint256) {
         return uint256(keccak256(seed));
     }
 
-  function changeSeed(uint256 new_seed) onlyCreater(msg.sender) {
+  function changeSeed(uint256 new_seed) public{
       seed = new_seed;
+  }
+  
+  function getSeed() view onlyCreater(msg.sender) returns (uint256){
+      return seed;
   }
   
 }
