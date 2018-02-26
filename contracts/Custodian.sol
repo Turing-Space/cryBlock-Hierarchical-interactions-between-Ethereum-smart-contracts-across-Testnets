@@ -91,6 +91,10 @@ contract Custodian {
         return clients[clientID];
     }
 
+    function getSeed() public view onlyOwner(msg.sender) returns (uint256) {
+        return seed;
+    }
+
     function setSeed(uint256 newSeed) public onlyOwner(msg.sender) {
         seed = newSeed;
         CustodianSeedChangedAt(now);
