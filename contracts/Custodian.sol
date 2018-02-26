@@ -2,32 +2,40 @@ pragma solidity ^0.4.13;
 
 contract Client {
 
-    address owner;
-    address creator;
+    address owner; // currently not in use
     uint256 seed;
+    address public creator;
+
+    event ClientSeedChangedAt(uint256 time);
 
     modifier onlyCreater(address sender){
         require(sender == creator);
         _;
     }
 
-  // Constructor
-  function Client(uint256 _seed, address _creator) {
-    seed = _seed;
-    creator = _creator;
-  }
-
-  function getRamdomNumber() returns (uint256) {
+    /** Internal functions **/
+    function getRamdomNumber() internal view returns (uint256) {
         return uint256(keccak256(seed));
     }
+    /************************/
 
-  function changeSeed(uint256 new_seed) public{
-      seed = new_seed;
-  }
+
+    // Constructor
+    function Client(uint256 _seed, address _creator) public {
+        seed = _seed;
+        creator = _creator;
+    }
+
+    function changeSeed(uint256 newSeed) public returns (bool success) {
+        seed = newSeed;
+        ClientSeedChangedAt(now);
+
+        return true;
+    }
   
-  function getSeed() view onlyCreater(msg.sender) returns (uint256){
-      return seed;
-  }
+    function getSeed() public view onlyCreater(msg.sender) returns (uint256) {
+        return seed;
+    }
   
 }
 
@@ -35,16 +43,31 @@ contract Client {
 contract Custodian {
 
     uint256 public volume;   // total volume of Clients
-    mapping (uint256 => address) clients;   // store Client IDs --> Client addresses
+    address public owner;
     uint256 seed;
-    address owner;
+    mapping (uint256 => address) clients;   // store Client IDs --> Client addresses
 
-    event CreateClient(uint256 id, address new_address);
+    event CreateClient(uint256 id, address newAddress);
+    event CustodianSeedChangedAt(uint256 time);    
+    event UpdateClientFinished(uint256 amountOfClients, uint256 time);    
 
     modifier onlyOwner(address sender){
         require(sender == owner);
         _;
     }
+
+    /** Internal functions **/
+    function getNextID() internal returns (uint256) {
+        volume = volume + 1;   // Increment total volume
+        return volume;
+    }
+
+    function setSeedByAddress(address clientAddress, uint256 newSeed) internal onlyOwner(msg.sender) {
+        Client client = Client(clientAddress);
+        assert(client.changeSeed(newSeed)); // should receive the value "true" after successfully called the client contract 
+    }
+    /************************/
+
     
     // Constructor
     function Custodian() public {
@@ -52,14 +75,8 @@ contract Custodian {
         owner = msg.sender;
     }
 
-    // Get Available ID
-    function getNextID() returns (uint256) {
-        volume = volume + 1;   // Increment total volume
-        return volume;
-    }
-    
     // Client creater
-    function createClient() public returns (uint256) {
+    function createClient() public onlyOwner(msg.sender) returns (uint256) {
         var clientID = getNextID();
         address clientAddress = new Client(seed , msg.sender);
         clients[clientID] = clientAddress;
@@ -69,27 +86,23 @@ contract Custodian {
     }
 
     // Return Client address
-    function getClientAddrByID(uint256 clientID) public view returns (address) {
+    function getClientAddrByID(uint256 clientID) public view onlyOwner(msg.sender) returns (address) {
         return clients[clientID];
     }
 
-    function setSeed(uint256 new_seed) onlyOwner(msg.sender) {
-        seed = new_seed;
-        if (volume >= 1) {
-            for (var i = 1; i <= volume; i++) {
-                setSeedByAddress(getClientAddrByID(i), new_seed);
+    function setSeed(uint256 newSeed) public onlyOwner(msg.sender) {
+        seed = newSeed;
+        CustodianSeedChangedAt(now);
+
+        // if there exists client contracts 
+        if (volume >= 1) { 
+            for (uint256 i = 1; i <= volume; i++) {
+                setSeedByAddress(getClientAddrByID(i), newSeed);
             }
         }
     }
     
-    function setSeedByAddress(address clientAddress, uint256 new_seed) internal onlyOwner(msg.sender) returns (bool success) {
-        Client client = Client(clientAddress);
-        client.changeSeed(new_seed);
-        
-        return true;
-    }
-
-    function changeOwner(address new_owner) onlyOwner(msg.sender) {
-        owner = new_owner;
+    function changeOwner(address newOwner) public onlyOwner(msg.sender) {
+        owner = newOwner;
     }
 }
