@@ -85,12 +85,18 @@ contract Custodian {
 
         return clientID;
     }
+    
+    function createClientBatch(uint256 batchSize) public onlyOwner(msg.sender) returns (uint256) {
+        for (uint256 i = 0; i < batchSize; i++) {
+            createClient();
+        }
+    }
 
     // Return Client address
     function getClientAddrByID(uint256 clientID) public view onlyOwner(msg.sender) returns (address) {
         return clients[clientID];
     }
-
+    
     function getSeed() public view onlyOwner(msg.sender) returns (uint256) {
         return seed;
     }
