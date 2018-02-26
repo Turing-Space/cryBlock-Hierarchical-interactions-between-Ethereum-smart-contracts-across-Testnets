@@ -64,7 +64,8 @@ contract Custodian {
 
     function setSeedByAddress(address clientAddress, uint256 newSeed) internal onlyOwner(msg.sender) {
         Client client = Client(clientAddress);
-        assert(client.changeSeed(newSeed)); // should receive the value "true" after successfully called the client contract 
+        assert(client.changeSeed(newSeed)); // should receive the value "true" after successfully called the client contract, 
+        // this is to make sure that the client contract does complete the request as expected 
     }
     /************************/
 
