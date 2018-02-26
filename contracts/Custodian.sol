@@ -78,7 +78,7 @@ contract Custodian {
 
     // Client creater
     function createClient() public onlyOwner(msg.sender) returns (uint256) {
-        var clientID = getNextID();
+        uint256 clientID = getNextID();
         address clientAddress = new Client(seed , msg.sender);
         clients[clientID] = clientAddress;
         CreateClient(clientID, clientAddress);
