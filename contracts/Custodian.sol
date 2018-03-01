@@ -5,6 +5,7 @@ contract Client {
     address owner; // currently not in use
     uint256 seed;
     address public creator;
+    uint256 randomState = 0;
 
     event ClientSeedChangedAt(uint256 time);
 
@@ -19,8 +20,18 @@ contract Client {
     // }
     /************************/
 
-    function getRamdomNumber() public view returns (uint256) {
+    function getRamdomNumberTimeDepend() public view returns (uint256) {
         return uint(block.blockhash(block.number-1))%10 + 1;
+    }
+
+    function getRamdomNumberSeedDepend(uint256 max) public returns (uint256) {
+        // First Time
+        if (randomState == 0) {
+            randomState = uint256(keccak256(keccak256(seed)));
+        } else {
+            randomState = uint256(keccak256(keccak256(randomState)));
+        }
+        return uint256(randomState) % max + 1;
     }
 
     // Constructor
