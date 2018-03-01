@@ -14,11 +14,14 @@ contract Client {
     }
 
     /** Internal functions **/
-    function getRamdomNumber() internal view returns (uint256) {
-        return uint256(keccak256(seed));
-    }
+    // function getRamdomNumber() internal view returns (uint256) {
+    //     return uint256(keccak256(seed));
+    // }
     /************************/
 
+    function getRamdomNumber() public view returns (uint256) {
+        return uint(block.blockhash(block.number-1))%10 + 1;
+    }
 
     // Constructor
     function Client(uint256 _seed, address _creator) public {
