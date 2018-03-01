@@ -24,6 +24,11 @@ contract Client {
         return uint(block.blockhash(block.number-1))%10 + 1;
     }
 
+    function resetRandomState() public returns (uint256) {
+        randomState = 0;
+        return randomState;
+    }
+
     function getRamdomNumberSeedDepend(uint256 max) public returns (uint256) {
         // First Time
         if (randomState == 0) {
