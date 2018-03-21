@@ -103,6 +103,18 @@ contract Custodian {
             }
         }
     }
+
+    function setSeedBatch(uint256 newSeed, uint256 batchSize) public onlyOwner(msg.sender) {
+        seed = newSeed;
+        CustodianSeedChangedAt(now);
+
+        // if there exists client contracts 
+        if (volume >= 1 && batchSize <= volume && batchSize > 0) { 
+            for (uint256 i = 1; i <= batchSize; i++) {
+                setSeedByAddress(getClientAddrByID(i), newSeed);
+            }
+        }
+    }
     
     function changeOwner(address newOwner) public onlyOwner(msg.sender) {
         owner = newOwner;
