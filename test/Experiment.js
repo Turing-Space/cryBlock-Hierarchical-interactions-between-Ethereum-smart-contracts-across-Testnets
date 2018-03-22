@@ -1,4 +1,4 @@
-var Custodian = artifacts.require("./experiment/Custodian.sol");
+var Custodian = artifacts.require("./Custodian.sol");
 // var Client = artifacts.require("./Client.sol");
 var fs = require('fs');
 
@@ -21,8 +21,13 @@ function writeToCsv(csv_file_name, data_arr) {
 
 var NUM_TEST = 10;
 
-var EXPERIMENT_NAME = "Exp #4 Client (10) Deployment Latency";
+var EXPERIMENT_NAME = "Exp #7 SetSeedBatch (10) Latency";
 var TESTNET = "Kovan";
+
+// var CUSTODIAN_ADDRESS = "0x48485856d3778bc1ed9837f4c09ccd59a90ed57a"; // Ropsten
+// var CUSTODIAN_ADDRESS = "0x8a916a01cf632b5980a8b525f85d7a6da689658a"; // Rinkeby
+var CUSTODIAN_ADDRESS = "0xb458781ac460d23a0ea3820b1ea1a684747ddd01"; // Kovan
+
 
 contract('Custodian', function(accounts) {
     
@@ -30,22 +35,45 @@ contract('Custodian', function(accounts) {
 
         console.log(EXPERIMENT_NAME + " on <" + TESTNET + ">");
 
-        var custodianInstance = await Custodian.deployed();
+        var custodianInstance = await Custodian.at(CUSTODIAN_ADDRESS);
+        // var custodianInstance = await Custodian.deployed();
+        // var custodianInstance = await Custodian.new();
+
+        // Speedy Init 
+        for (var i = 0; i < 20; i++) {
+            await custodianInstance.createClientBatch(10);
+            console.log(i);
+        }
+
+        var volume = await custodianInstance.volume.call();
+        console.log(volume);       
 
         var start_ts;
         var exp_list = [];
 
-        for (var i = 0; i < NUM_TEST; i++) {
-            start_ts = getNow();
-            // var instance = await Custodian.new();   // Create new instance
-            var clientInstance = await custodianInstance.createClientBatch(10);
-            time_diff = getTimeDiff(start_ts);      // Calculate diff
-            exp_list.push(time_diff);
+
+        // Swift test for long night
+        temp_experiment_name = ["Exp #5 SetSeedBatch (1) Latency","Exp #6 SetSeedBatch (5) Latency","Exp #7 SetSeedBatch (10) Latency","Exp #8 SetSeedBatch (20) Latency","Exp #9 SetSeedBatch (50) Latency","Exp #10 SetSeedBatch (100) Latency"]
+        temp_batch_size = [1,5,10,20,50,100]
+        temp_iteration = 6;
+
+        for (var j=0;j<temp_iteration;j++) {
+
+            exp_list = [];
+
+            for (var i = 0; i < NUM_TEST; i++) {
+                start_ts = getNow();
+                // await custodianInstance.setSeedBatch(i, 10); // OOO
+                await custodianInstance.setSeedBatch(i, temp_batch_size[j]); // XXX
+
+                time_diff = getTimeDiff(start_ts);      // Calculate diff
+                exp_list.push(time_diff);
+            }
+            console.log(exp_list);
+
+            // writeToCsv(TESTNET + "_" + EXPERIMENT_NAME, exp_list); // OOO
+            writeToCsv(TESTNET + "_" + temp_experiment_name[j], exp_list); // XXX     
         }
-
-        console.log(exp_list);
-
-        writeToCsv(TESTNET + "_" + EXPERIMENT_NAME, exp_list);
 
     }).timeout(999999999999);
 
