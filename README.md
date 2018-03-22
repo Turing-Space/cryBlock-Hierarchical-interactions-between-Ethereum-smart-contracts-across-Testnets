@@ -2,9 +2,15 @@
 ```
 npm i
 ```
+# Setup wallet
+Make sure your metamask wallet has money at the testnet you are going to use
+Change the following to your mnemonic codes
+```
+var mnemonic = "force pistol endless treat spot craft easily panel hurt potato slide explain";
+```
 
 # Reproduce experiments (auto file generating)
-Go to /test/Experiment.js
+### Go to /test/Experiment.js
 1. Set up experiment title, testnet and number of tests per experiment
 ```
 // ##################### EXPERIMENT SETUPS ##################### //
