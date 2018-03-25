@@ -1,5 +1,5 @@
 var Manager = artifacts.require("./Manager.sol");
-var Staff = artifacts.require("./Staff.sol");
+// var Staff = artifacts.require("./Staff.sol");
 var fs = require('fs');
 
 function getNow() {
