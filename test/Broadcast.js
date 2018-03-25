@@ -25,9 +25,10 @@ var EXPERIMENT_NAME = "Manager-Staff Test";
 var TESTNET = "Ropsten";
 var NUM_TEST = 10;
 
+var NUM_OF_STAFF = 5;
 
 // ##################### CONTRACT ADDRESS ##################### //
-var MANAGER_ADDRESS = "0x48485856d3778bc1ed9837f4c09ccd59a90ed57a"; // Ropsten
+var MANAGER_ADDRESS = "0x49013c99d9fef010f05b90b919813d18357ba16f"; // Ropsten
 // var CUSTODIAN_ADDRESS = "0x8a916a01cf632b5980a8b525f85d7a6da689658a"; // Rinkeby
 // var CUSTODIAN_ADDRESS = "0xb458781ac460d23a0ea3820b1ea1a684747ddd01"; // Kovan
 
@@ -37,16 +38,19 @@ contract('Manager', function(accounts) {
     it(EXPERIMENT_NAME, async function() {
         // console.log(EXPERIMENT_NAME + " on <" + TESTNET + ">");
 
+        console.log("Enter experiment");
+
 
         // ##################### CUSTODIAN (DEPLOYED / NEW) ##################### //
         var managerInstance = await Manager.at(MANAGER_ADDRESS);
         // var custodianInstance = await Custodian.deployed();
         // var custodianInstance = await Custodian.new();
 
+        console.log("Manager instance is ready");
 
         // ##################### (Optional) CREATE CLIENTS BATCH ##################### //
-        for (var i = 0; i < 5; i++) {
-            await custodianInstance.hireStaff();
+        for (var i = 0; i < NUM_OF_STAFF; i++) {
+            await managerInstance.hireStaff();
             console.log(i);
         }
 
@@ -58,7 +62,15 @@ contract('Manager', function(accounts) {
         // var start_ts;
         // var exp_list = [];
 
-        await managerInstance.setSeedBatch(i, temp_batch_size[j]);
+        
+
+        var StaffAddrList = [];
+        for (var ID=1; ID < NUM_OF_STAFF+1; ID++){
+            StaffAddrList.push(await managerInstance.getStaffAddrByID(ID));
+        }
+
+        console.log(StaffAddrList);
+
 
 
         // // ##################### TEST INITIALIZATION BEGIN ##################### //
@@ -93,41 +105,4 @@ contract('Manager', function(accounts) {
         // }
 
     }).timeout(999999999999);
-
-
-    // it("ropsten test", async function() {
-
-    //     var instance = await Custodian.deployed();
-
-    //     var start_ts = getNow();
-
-    //     var volume = await instance.volume.call();
-    //     console.log(volume);
-
-    //     // for (var i = 0; i < 100; i++) {
-    //     //     var client = await instance.createClientBatch(10);
-    //     // }
-
-    //     var time_diff = getTimeDiff(start_ts);
-    //     console.log("time_diff: ", time_diff);
-
-        
-
-    // }).timeout(999999999999);
-
-
-    // it("first test", async function() {
-    //     var instance = await Custodian.deployed();
-    //     console.log(instance);
-
-    //     var seed = await instance.getSeed();
-    //     assert.equal(seed, 0);
-    //     console.log("seed: ", seed.toNumber());
-
-    //     var client = await instance.createClient();
-    //     console.log(client);
-
-    //     var volume = await instance.volume.call();
-    //     console.log("volume: ", volume.toNumber());
-    // });
 });
