@@ -41,7 +41,7 @@ contract(['Manager', 'Staff'], function(accounts) {
     it(EXPERIMENT_NAME, async function() {
         // console.log(EXPERIMENT_NAME + " on <" + TESTNET + ">");
 
-        console.log("Enter experiment");
+        console.log("Start experiment");
 
 
 
@@ -49,16 +49,16 @@ contract(['Manager', 'Staff'], function(accounts) {
         class Task {
             constructor(newId, newStaffList = []) { this._id = newId; this._staffList = newStaffList; }
             get id() { return this._id; }
-            set id(newId) { this.id = newId; }
+            set id(newId) { this._id = newId; }
 
             get staffList() { return this._staffList; }
             set staffList(newStaffList) { this._staffList = newStaffList; }
 
-            broadcastOneStaff(newStaffAddr = 0x0) {
+            broadcastOneStaff(newStaffAddr, id) {
                 return new Promise(async function(resolve, reject) {
                     try {
                         var staffInstance = await Staff.at(newStaffAddr);
-                        staffInstance.setTaskData(this._id, Math.random()*1000);
+                        staffInstance.setTaskData(id, Math.random()*1000);
                         resolve(true);
                     } catch (err) {
                         reject("Broadcast one staff failed: "+ err);
@@ -66,7 +66,7 @@ contract(['Manager', 'Staff'], function(accounts) {
                 });          
             }
 
-            broadcast() { Promise.all(this._staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
+            broadcast() { Promise.all(this._staffList.map((addr) => this.broadcastOneStaff(addr, this._id))).then(console.log); }
         }
 
 
@@ -107,9 +107,15 @@ contract(['Manager', 'Staff'], function(accounts) {
         // Tasks Broadcasting
         var task_1 = new Task(1, StaffAddrList);
 
+        await task_1.broadcast();
 
+        console.log("broadcasted");
 
+        var staff_1 = await Staff.at(StaffAddrList[0]);
 
+        var task_1_val = await staff_1.taskList.call(1);
+
+        
 
         // // ##################### TEST INITIALIZATION BEGIN ##################### //
         // temp_experiment_name = ["Exp #5 SetSeedBatch (1) Latency","Exp #6 SetSeedBatch (5) Latency","Exp #7 SetSeedBatch (10) Latency","Exp #8 SetSeedBatch (20) Latency","Exp #9 SetSeedBatch (50) Latency","Exp #10 SetSeedBatch (100) Latency"]
