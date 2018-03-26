@@ -22,37 +22,37 @@ function writeToCsv(csv_file_name, data_arr) {
 
 // ##################### EXPERIMENT SETUPS ##################### //
 var EXPERIMENT_NAME = "Manager-Staff Test";
-var TESTNET = "Ropsten";
+var TESTNET = "Kovan";
 var NUM_TEST = 10;
 
 var NUM_OF_STAFF = 5;
 
 // ##################### CONTRACT ADDRESS ##################### //
-var MANAGER_ADDRESS = "0x49013c99d9fef010f05b90b919813d18357ba16f"; // Ropsten
+var MANAGER_ADDRESS = "0x1dd7db7af70403d19f1676329701c958c55b9342"; // Ropsten
 // var CUSTODIAN_ADDRESS = "0x8a916a01cf632b5980a8b525f85d7a6da689658a"; // Rinkeby
 // var CUSTODIAN_ADDRESS = "0xb458781ac460d23a0ea3820b1ea1a684747ddd01"; // Kovan
 
 
 // // Task Broadcaster
-class Task {
-    constructor(_id, _staffList = []) { this.id = _id; this.staffList = _staffList; }
-    get id() { this.id; }
-    get staffList() { this.staffList; }
+// class Task {
+//     constructor(_id, _staffList = []) { this.id = _id; this.staffList = _staffList; }
+//     get id() { this.id; }
+//     get staffList() { this.staffList; }
 
-    broadcastOneStaff(_staffAddr) {
-        return new Promise(function(resolve, reject) {
-            try {
-                var staffInstance = await Staff.at(_staffAddr);
-                staffInstance.setTaskData(_id, Math.random()*1000);
-                resolve(true);
-            } catch (err) {
-                reject("Broadcast one staff failed: "+ err);
-            }
-        });          
-    }
+//     broadcastOneStaff(_staffAddr) {
+//         return new Promise(function(resolve, reject) {
+//             try {
+//                 var staffInstance = await Staff.at(_staffAddr);
+//                 staffInstance.setTaskData(_id, Math.random()*1000);
+//                 resolve(true);
+//             } catch (err) {
+//                 reject("Broadcast one staff failed: "+ err);
+//             }
+//         });          
+//     }
 
-    broadcast() { Promise.all(staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
-}
+//     broadcast() { Promise.all(staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
+// }
 
 
 // ##################### CONTRACT TEST ##################### //
@@ -68,25 +68,28 @@ contract(['Manager', 'Staff'], function(accounts) {
 
 
         // Task Broadcaster
-        // class Task {
-        //     constructor(_id, _staffList = []) { this.id = _id; this.staffList = _staffList; }
-        //     get id() { this.id; }
-        //     get staffList() { this.staffList; }
-        //     broadcastOneStaff(_staffAddr) {
-        //         return new Promise(function(resolve, reject) {
-        //             var success = false;
-        //             // var staffInstance = await Staff.at(_staffAddr);
-        //             // staffInstance.setTaskData(_id, Math.random()*1000);
-        //             success = true;
-        //             if (success) {
-        //                 resolve(success);
-        //             } else {
-        //                 reject("Broadcast one staff failed");
-        //             }
-        //         });          
-        //     }
-        //     broadcast() { Promise.all(staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
-        // }
+        class Task {
+            constructor(newId, newStaffList = []) { this._id = newId; this._staffList = newStaffList; }
+            get id() { return this._id; }
+            set id(newId) { this.id = newId; }
+
+            get staffList() { return this._staffList; }
+            set staffList(newStaffList) { this._staffList = newStaffList; }
+
+            broadcastOneStaff(newStaffAddr) {
+                return new Promise(function(resolve, reject) {
+                    try {
+                        var staffInstance = await Staff.at(newStaffAddr);
+                        staffInstance.setTaskData(this._id, Math.random()*1000);
+                        resolve(true);
+                    } catch (err) {
+                        reject("Broadcast one staff failed: "+ err);
+                    }
+                });          
+            }
+
+            broadcast() { Promise.all(this._staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
+        }
 
 
 
@@ -99,14 +102,14 @@ contract(['Manager', 'Staff'], function(accounts) {
         console.log("Manager instance is ready");
 
         // ##################### (Optional) CREATE CLIENTS BATCH ##################### //
-        // for (var i = 0; i < NUM_OF_STAFF; i++) {
-        //     await managerInstance.hireStaff();
-        //     console.log(i);
-        // }
+        for (var i = 0; i < NUM_OF_STAFF; i++) {
+            await managerInstance.hireStaff();
+            console.log(i);
+        }
 
         // Check Volume
         var volume = await managerInstance.volume.call();
-        console.log(volume);       
+        console.log(volume.toNumber());       
 
         // Inits
         // var start_ts;
@@ -124,7 +127,7 @@ contract(['Manager', 'Staff'], function(accounts) {
 
 
         // Tasks Broadcasting
-        var task_1 = Task(1, StaffAddrList);
+        var task_1 = new Task(1, StaffAddrList);
 
 
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.19;
 
 contract Staff {
 
@@ -38,8 +38,7 @@ contract Staff {
         } else {
             return false;
         }
-    }
-    
+    } 
 }
 
 contract Manager {
@@ -58,7 +57,7 @@ contract Manager {
 
     
     // Constructor
-    function Custodian() public {
+    function Manager() public {
         volume = 0;
         owner = msg.sender;
     }
