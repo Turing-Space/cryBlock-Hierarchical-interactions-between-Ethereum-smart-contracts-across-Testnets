@@ -1,4 +1,6 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.19;
+
+// import * as ManagerContract from "./Manager.sol";
 
 contract Manager {
 
@@ -16,7 +18,7 @@ contract Manager {
 
     
     // Constructor
-    function Custodian() public {
+    function Manager() public {
         volume = 0;
         owner = msg.sender;
     }
@@ -43,6 +45,33 @@ contract Manager {
         owner = newOwner;
     }
 }
+
+
+// contract Manager {
+
+//     uint256 public volume;   // total volume of Staffs
+//     address public owner;
+//     mapping (uint256 => uint256) public taskList;
+//     mapping (uint256 => address) staffs;   // store Staff IDs --> Staff addresses
+
+//     /** Internal functions **/
+//     function getNextID() internal returns (uint256);
+//     /************************/
+
+//     // Constructor
+//     function Manager() public {
+//         volume = 0;
+//         owner = msg.sender;
+//     }
+
+//     // Staff hiring
+//     function hireStaff() public returns (uint256);
+//     function getStaffAddrByID(uint256 staffID) public view returns (address);
+//     function updateTaskList(uint256 _id, uint256 _data) public returns (bool success);
+//     function changeOwner(address newOwner) public;
+// }
+
+
 
 contract Staff {
 
@@ -82,6 +111,5 @@ contract Staff {
         } else {
             return false;
         }
-    }
-    
+    } 
 }

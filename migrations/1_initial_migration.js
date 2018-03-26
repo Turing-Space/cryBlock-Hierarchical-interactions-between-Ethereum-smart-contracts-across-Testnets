@@ -8,6 +8,6 @@ module.exports = function (deployer) {
   deployer.deploy(Migrations);
   deployer.deploy(Custodian);
   deployer.deploy(Manager);
-  deployer.deploy(Staff);
+  deployer.deploy(Staff, "0x0");
   // deployer.deploy(Client);
 };
