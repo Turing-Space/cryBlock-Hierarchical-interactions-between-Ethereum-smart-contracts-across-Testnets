@@ -1,5 +1,5 @@
 var Manager = artifacts.require("./Manager.sol");
-// var Staff = artifacts.require("./Staff.sol");
+var Staff = artifacts.require("./Staff.sol");
 var fs = require('fs');
 
 function getNow() {
@@ -55,9 +55,8 @@ contract(['Manager', 'Staff'], function(accounts) {
             set staffList(newStaffList) { this._staffList = newStaffList; }
 
             broadcastOneStaff(newStaffAddr = 0x0) {
-                return new Promise(function(resolve, reject) {
+                return new Promise(async function(resolve, reject) {
                     try {
-                        var Staff = artifacts.require("./Staff.sol");
                         var staffInstance = await Staff.at(newStaffAddr);
                         staffInstance.setTaskData(this._id, Math.random()*1000);
                         resolve(true);
