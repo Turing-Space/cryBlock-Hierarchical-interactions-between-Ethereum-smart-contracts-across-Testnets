@@ -58,9 +58,9 @@ contract(['Manager', 'Staff'], function(accounts) {
                 return new Promise(async function(resolve, reject) {
                     try {
                         var staffInstance = await Staff.at(newStaffAddr);
-                        staffInstance.setTaskData(id, Math.random()*1000);
+                        await staffInstance.setTaskData(id, Math.random()*1000);
                         resolve(true);
-                    } catch (err) {
+                    } catch (err) {  
                         reject("Broadcast one staff failed: "+ err);
                     }
                 });          
@@ -112,10 +112,13 @@ contract(['Manager', 'Staff'], function(accounts) {
         console.log("broadcasted");
 
         var staff_1 = await Staff.at(StaffAddrList[0]);
+        // console.log("S");
 
         var task_1_val = await staff_1.taskList.call(1);
+        console.log("task list from staff:", task_1_val.toNumber());
 
-        
+        var ans = await managerInstance.taskList.call(1);
+        console.log("task list from manager:", ans.toNumber());
 
         // // ##################### TEST INITIALIZATION BEGIN ##################### //
         // temp_experiment_name = ["Exp #5 SetSeedBatch (1) Latency","Exp #6 SetSeedBatch (5) Latency","Exp #7 SetSeedBatch (10) Latency","Exp #8 SetSeedBatch (20) Latency","Exp #9 SetSeedBatch (50) Latency","Exp #10 SetSeedBatch (100) Latency"]
