@@ -1,5 +1,5 @@
 var Manager = artifacts.require("./Manager.sol");
-// var Staff = artifacts.require("./Staff.sol");
+var Staff = artifacts.require("./Staff.sol");
 var fs = require('fs');
 
 function getNow() {
@@ -33,43 +33,100 @@ var MANAGER_ADDRESS = "0x49013c99d9fef010f05b90b919813d18357ba16f"; // Ropsten
 // var CUSTODIAN_ADDRESS = "0xb458781ac460d23a0ea3820b1ea1a684747ddd01"; // Kovan
 
 
+// // Task Broadcaster
+class Task {
+    constructor(_id, _staffList = []) { this.id = _id; this.staffList = _staffList; }
+    get id() { this.id; }
+    get staffList() { this.staffList; }
+
+    broadcastOneStaff(_staffAddr) {
+        return new Promise(function(resolve, reject) {
+            try {
+                var staffInstance = await Staff.at(_staffAddr);
+                staffInstance.setTaskData(_id, Math.random()*1000);
+                resolve(true);
+            } catch (err) {
+                reject("Broadcast one staff failed: "+ err);
+            }
+        });          
+    }
+
+    broadcast() { Promise.all(staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
+}
+
+
 // ##################### CONTRACT TEST ##################### //
-contract('Manager', function(accounts) {
+contract(['Manager', 'Staff'], function(accounts) {
+
+
+    // Real Test
     it(EXPERIMENT_NAME, async function() {
         // console.log(EXPERIMENT_NAME + " on <" + TESTNET + ">");
 
         console.log("Enter experiment");
 
 
+
+        // Task Broadcaster
+        // class Task {
+        //     constructor(_id, _staffList = []) { this.id = _id; this.staffList = _staffList; }
+        //     get id() { this.id; }
+        //     get staffList() { this.staffList; }
+        //     broadcastOneStaff(_staffAddr) {
+        //         return new Promise(function(resolve, reject) {
+        //             var success = false;
+        //             // var staffInstance = await Staff.at(_staffAddr);
+        //             // staffInstance.setTaskData(_id, Math.random()*1000);
+        //             success = true;
+        //             if (success) {
+        //                 resolve(success);
+        //             } else {
+        //                 reject("Broadcast one staff failed");
+        //             }
+        //         });          
+        //     }
+        //     broadcast() { Promise.all(staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
+        // }
+
+
+
         // ##################### CUSTODIAN (DEPLOYED / NEW) ##################### //
         var managerInstance = await Manager.at(MANAGER_ADDRESS);
+        // var staffInstance = await Staff.at("0x6002c62aeb2d4c8c9ffd05f3138a904eea140d14");
         // var custodianInstance = await Custodian.deployed();
         // var custodianInstance = await Custodian.new();
 
         console.log("Manager instance is ready");
 
         // ##################### (Optional) CREATE CLIENTS BATCH ##################### //
-        for (var i = 0; i < NUM_OF_STAFF; i++) {
-            await managerInstance.hireStaff();
-            console.log(i);
-        }
+        // for (var i = 0; i < NUM_OF_STAFF; i++) {
+        //     await managerInstance.hireStaff();
+        //     console.log(i);
+        // }
 
         // Check Volume
-        // var volume = await custodianInstance.volume.call();
-        // console.log(volume);       
+        var volume = await managerInstance.volume.call();
+        console.log(volume);       
 
         // Inits
         // var start_ts;
         // var exp_list = [];
 
         
-
+        // NUM_OF_STAFF can be "volume" to maximize the performance
         var StaffAddrList = [];
         for (var ID=1; ID < NUM_OF_STAFF+1; ID++){
             StaffAddrList.push(await managerInstance.getStaffAddrByID(ID));
         }
 
         console.log(StaffAddrList);
+
+
+
+        // Tasks Broadcasting
+        var task_1 = Task(1, StaffAddrList);
+
+
 
 
 
