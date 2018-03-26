@@ -1,5 +1,5 @@
 var Manager = artifacts.require("./Manager.sol");
-var Staff = artifacts.require("./Staff.sol");
+// var Staff = artifacts.require("./Staff.sol");
 var fs = require('fs');
 
 function getNow() {
@@ -28,31 +28,9 @@ var NUM_TEST = 10;
 var NUM_OF_STAFF = 5;
 
 // ##################### CONTRACT ADDRESS ##################### //
-var MANAGER_ADDRESS = "0x1dd7db7af70403d19f1676329701c958c55b9342"; // Ropsten
+var MANAGER_ADDRESS = "0x1827706a48dae4a9047fa54021c43ea9aa878553"; // Ropsten
 // var CUSTODIAN_ADDRESS = "0x8a916a01cf632b5980a8b525f85d7a6da689658a"; // Rinkeby
 // var CUSTODIAN_ADDRESS = "0xb458781ac460d23a0ea3820b1ea1a684747ddd01"; // Kovan
-
-
-// // Task Broadcaster
-// class Task {
-//     constructor(_id, _staffList = []) { this.id = _id; this.staffList = _staffList; }
-//     get id() { this.id; }
-//     get staffList() { this.staffList; }
-
-//     broadcastOneStaff(_staffAddr) {
-//         return new Promise(function(resolve, reject) {
-//             try {
-//                 var staffInstance = await Staff.at(_staffAddr);
-//                 staffInstance.setTaskData(_id, Math.random()*1000);
-//                 resolve(true);
-//             } catch (err) {
-//                 reject("Broadcast one staff failed: "+ err);
-//             }
-//         });          
-//     }
-
-//     broadcast() { Promise.all(staffList.map((addr) => broadcastOneStaff(addr))).then(console.log); }
-// }
 
 
 // ##################### CONTRACT TEST ##################### //
@@ -76,9 +54,10 @@ contract(['Manager', 'Staff'], function(accounts) {
             get staffList() { return this._staffList; }
             set staffList(newStaffList) { this._staffList = newStaffList; }
 
-            broadcastOneStaff(newStaffAddr) {
+            broadcastOneStaff(newStaffAddr = 0x0) {
                 return new Promise(function(resolve, reject) {
                     try {
+                        var Staff = artifacts.require("./Staff.sol");
                         var staffInstance = await Staff.at(newStaffAddr);
                         staffInstance.setTaskData(this._id, Math.random()*1000);
                         resolve(true);
@@ -102,10 +81,10 @@ contract(['Manager', 'Staff'], function(accounts) {
         console.log("Manager instance is ready");
 
         // ##################### (Optional) CREATE CLIENTS BATCH ##################### //
-        for (var i = 0; i < NUM_OF_STAFF; i++) {
-            await managerInstance.hireStaff();
-            console.log(i);
-        }
+        // for (var i = 0; i < NUM_OF_STAFF; i++) {
+        //     await managerInstance.hireStaff();
+        //     console.log(i);
+        // }
 
         // Check Volume
         var volume = await managerInstance.volume.call();
