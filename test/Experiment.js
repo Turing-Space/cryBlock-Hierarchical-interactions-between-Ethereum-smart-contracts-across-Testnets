@@ -31,7 +31,7 @@ function writeToCsvMatrix(csv_file_name, data_matrix) {
 
 // ##################### EXPERIMENT SETUPS ##################### //
 var EXPERIMENT_NAME = "Experiment";
-var TESTNET = "Ropsten";
+var TESTNET = "Kovan";
 var NUM_TEST = 10;
 
 
