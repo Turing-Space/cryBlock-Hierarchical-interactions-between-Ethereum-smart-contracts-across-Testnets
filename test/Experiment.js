@@ -31,12 +31,12 @@ function writeToCsvMatrix(csv_file_name, data_matrix) {
 
 // ##################### EXPERIMENT SETUPS ##################### //
 var EXPERIMENT_NAME = "Experiment";
-var TESTNET = "Kovan";
+var TESTNET = "Ropsten";
 var NUM_TEST = 10;
 
 
 // ##################### CONTRACT ADDRESS ##################### //
-// var CUSTODIAN_ADDRESS = "0x48485856d3778bc1ed9837f4c09ccd59a90ed57a"; // Ropsten
+var CUSTODIAN_ADDRESS = "0x48485856d3778bc1ed9837f4c09ccd59a90ed57a"; // Ropsten
 // var CUSTODIAN_ADDRESS = "0x8a916a01cf632b5980a8b525f85d7a6da689658a"; // Rinkeby
 // var CUSTODIAN_ADDRESS = "0xb458781ac460d23a0ea3820b1ea1a684747ddd01"; // Kovan
 
@@ -48,7 +48,7 @@ contract('Custodian', function(accounts) {
 
 
         // ##################### CUSTODIAN (DEPLOYED / NEW) ##################### //
-        // var custodianInstance = await Custodian.at(CUSTODIAN_ADDRESS);
+        var custodianInstance = await Custodian.at(CUSTODIAN_ADDRESS);
         // var custodianInstance = await Custodian.deployed();
         // var custodianInstance = await Custodian.new();
 
@@ -60,8 +60,8 @@ contract('Custodian', function(accounts) {
         // } 
 
         // Check Volume
-        // var volume = await custodianInstance.volume.call();
-        // console.log(volume.toNumber());       
+        var volume = await custodianInstance.volume.call();
+        console.log(volume.toNumber());       
 
         // Inits
         var start_ts;
@@ -71,12 +71,13 @@ contract('Custodian', function(accounts) {
 
 
         // ##################### TEST INITIALIZATION BEGIN ##################### //
-        temp_experiment_name = ["Exp #1 Custodian Deployment Latency"]                
+        temp_experiment_name = ["Exp #11 REDO SetSeedBatch (1) Latency"] 
+        // temp_experiment_name = ["Exp #1 Custodian Deployment Latency"]                
         // temp_experiment_name = ["Exp #2 Client (1) Deployment Latency","Exp #3 Client (5) Deployment Latency","Exp #4 Client (10) Deployment Latency"]        
         // temp_experiment_name = ["Exp #5 SetSeedBatch (1) Latency","Exp #6 SetSeedBatch (5) Latency","Exp #7 SetSeedBatch (10) Latency","Exp #8 SetSeedBatch (20) Latency","Exp #9 SetSeedBatch (50) Latency","Exp #10 SetSeedBatch (100) Latency"]
         // temp_experiment_name = ["Exp #7 SetSeedBatch (10) Latency","Exp #8 SetSeedBatch (20) Latency","Exp #9 SetSeedBatch (50) Latency","Exp #10 SetSeedBatch (100) Latency"]        
         // temp_experiment_name = ["Exp #5 SetSeedBatch (1) Latency"]
-        temp_batch_size = [10]
+        temp_batch_size = [1]
         temp_iteration = 1;
         // ##################### TEST INITIALIZATION END ##################### //
 
@@ -91,9 +92,9 @@ contract('Custodian', function(accounts) {
                 
 
                 // ##################### MAIN EXECUTION TESTING BEGIN ##################### //
-                let receiptSource = await Custodian.new();              
+                // let receiptSource = await Custodian.new();              
                 // let receiptSource = await custodianInstance.createClientBatch(temp_batch_size[j]);
-                // let receiptSource = await custodianInstance.setSeedBatch(i, temp_batch_size[j]); // XXX
+                let receiptSource = await custodianInstance.setSeedBatch(i, temp_batch_size[j]); // XXX
                 // await custodianInstance.setSeedBatch(i, 10); // OOO
                 // ##################### MAIN EXECUTION TESTING END ##################### //
                 
@@ -102,17 +103,17 @@ contract('Custodian', function(accounts) {
                 exp_list.push(time_diff);
 
                 // This is only enabled for Exp #1 Custodian instance deployment
-                web3.eth.getTransactionReceipt(receiptSource.transactionHash, (err,receipt)=>{
-                    var gasUsed = receipt.gasUsed;
-                    gas_list.push(gasUsed);
-                    console.log(gasUsed);
-                });
+                // web3.eth.getTransactionReceipt(receiptSource.transactionHash, (err,receipt)=>{
+                //     var gasUsed = receipt.gasUsed;
+                //     gas_list.push(gasUsed);
+                //     console.log(gasUsed);
+                // });
                 
 
                 // ALL OTHER experiments
-                // var gasUsed = receiptSource.receipt.gasUsed;
-                // gas_list.push(gasUsed);
-                // console.log(gasUsed);
+                var gasUsed = receiptSource.receipt.gasUsed;
+                gas_list.push(gasUsed);
+                console.log(gasUsed);
                 
             }
             console.log(exp_list);
