@@ -1,3 +1,6 @@
+# Code Base for Hierarchical interactions between Ethereum smart contracts across Testnets
+Paper accepted by [CryBlock](www.cryblok.org) 2018, held by the 16th ACM International Conference on Mobile Systems, Applications, and Services in Munich, Germany. 
+
 # Installation
 ```
 npm i
