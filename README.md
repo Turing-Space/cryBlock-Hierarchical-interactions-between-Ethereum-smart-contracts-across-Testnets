@@ -9,7 +9,7 @@ npm i
 Make sure your metamask wallet has money at the testnet you are going to use
 Change the following to your mnemonic codes
 ```
-var mnemonic = "force pistol endless treat spot craft easily panel hurt potato slide explain";
+var mnemonic = "node mining token blockchain ico fork rich hash signature ethereum consensus transaction";
 ```
 
 # Reproduce experiments (auto file generating)
